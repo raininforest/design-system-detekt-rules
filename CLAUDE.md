@@ -17,16 +17,28 @@
 
 ## Структура модулей
 
-- `app/` — тестовое Android-приложение на Compose (minSdk 24, compileSdk 36), используется как живой стенд для проверки правил
+```
+ds-detekt-rules/
+├── detekt-compose-design-system-rules/   # Kotlin JVM-библиотека с правилами detekt
+│   └── src/main/kotlin/com/github/raininforest/detekt/designsystem/
+│       ├── rules/                        # по одному файлу на правило
+│       ├── config/DesignSystemConfig.kt  # конфиг токенов (читается из detekt.yml)
+│       └── ComposeDesignSystemRuleSetProvider.kt  # SPI точка входа
+└── app/                                  # Android Compose-приложение (живой стенд)
+```
+
+Регистрация плагина через SPI:
+`src/main/resources/META-INF/services/io.gitlab.arturbosch.detekt.api.RuleSetProvider`
 
 ## Команды
 
 ```bash
-./gradlew test           # юнит-тесты правил
-./gradlew detekt         # прогнать detekt по проекту
-./gradlew assembleDebug  # собрать тестовое приложение
+./gradlew :detekt-compose-design-system-rules:test  # юнит-тесты правил
+./gradlew detekt                                     # прогнать detekt по проекту
+./gradlew :app:assembleDebug                         # собрать тестовое приложение
 ```
 
 ## Package
 
-`com.github.raininforest.ds.rules`
+- Правила: `com.github.raininforest.detekt.designsystem`
+- Тестовое приложение: `com.github.raininforest.ds.rules`
