@@ -1,0 +1,23 @@
+# IntelliJ / Android Studio
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local config
+local.properties
+gradle.properties.local
+
+# macOS
+.DS_Store
+
+# Detekt build output
+detekt-report/
+
+# Captures (Android)
+/captures
+.externalNativeBuild
+.cxx
