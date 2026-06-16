@@ -1,0 +1,45 @@
+ComposeDesignSystem:
+  # Rules for detecting hardcoded design values in Jetpack Compose code.
+  # Set active: true and configure allowedTokens to match your design system.
+
+  HardcodedColor:
+    active: false
+    # Name of the object/class holding your color tokens.
+    # Expressions starting with this prefix are treated as valid token usage.
+    # Default: "MaterialTheme.colorScheme"
+    allowedTokens: "MaterialTheme.colorScheme"
+    # Override severity for this rule: error, warning, info
+    # severity: warning
+
+  HardcodedShape:
+    active: false
+    # Name of the object/class holding your shape tokens.
+    # Default: "MaterialTheme.shapes"
+    allowedTokens: "MaterialTheme.shapes"
+    # severity: warning
+
+  HardcodedTypography:
+    active: false
+    # Name of the object/class holding your typography tokens.
+    # Default: "MaterialTheme.typography"
+    allowedTokens: "MaterialTheme.typography"
+    # List of allowed "magic" sp/em values (e.g. zero-size placeholders).
+    # Any .sp literal whose value is in this list will NOT be reported.
+    # Default: [] (all .sp literals are reported)
+    allowedValues: []
+    # severity: warning
+
+# Example for a custom design system:
+#
+# ComposeDesignSystem:
+#   HardcodedColor:
+#     active: true
+#     allowedTokens: "AppColors"
+#     severity: warning
+#   HardcodedShape:
+#     active: true
+#     allowedTokens: "AppShapes"
+#   HardcodedTypography:
+#     active: true
+#     allowedTokens: "AppTypography"
+#     allowedValues: [0, 4, 8]

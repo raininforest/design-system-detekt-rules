@@ -10,46 +10,45 @@ import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtExpression
 
-class HardcodedColorRule(config: Config = Config.empty) : Rule(config) {
+class HardcodedShapeRule(config: Config = Config.empty) : Rule(config) {
 
     override val issue = Issue(
-        id = "HardcodedColor",
+        id = "HardcodedShape",
         severity = Severity.Style,
-        description = "Hardcoded color detected. Use design system color tokens instead.",
+        description = "Hardcoded shape detected. Use design system shape tokens instead.",
         debt = Debt.FIVE_MINS,
     )
 
-    private val allowedTokens: String = valueOrDefault("allowedTokens", "MaterialTheme.colorScheme")
+    private val allowedTokens: String = valueOrDefault("allowedTokens", "MaterialTheme.shapes")
+
+    private val shapeConstructors = setOf("RoundedCornerShape", "CutCornerShape", "CircleShape")
 
     override fun visitCallExpression(expression: KtCallExpression) {
         super.visitCallExpression(expression)
-        if (expression.calleeExpression?.text == "Color") {
+        val calleeName = expression.calleeExpression?.text ?: return
+        if (calleeName in shapeConstructors && expression.valueArguments.isNotEmpty()) {
             val hasLiteralArg = expression.valueArguments.any { arg ->
-                arg.getArgumentExpression() is KtConstantExpression
+                arg.getArgumentExpression().containsLiteralDimension()
             }
             if (hasLiteralArg && !expression.text.startsWith(allowedTokens)) {
                 report(
                     CodeSmell(
                         issue,
                         Entity.from(expression),
-                        "Hardcoded color: '${expression.text}'. Use $allowedTokens tokens instead.",
+                        "Hardcoded shape: '${expression.text}'. Use $allowedTokens tokens instead.",
                     )
                 )
             }
         }
     }
 
-    override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
-        super.visitDotQualifiedExpression(expression)
-        if (expression.receiverExpression.text == "Color" && !expression.text.startsWith(allowedTokens)) {
-            report(
-                CodeSmell(
-                    issue,
-                    Entity.from(expression),
-                    "Hardcoded color constant: '${expression.text}'. Use $allowedTokens tokens instead.",
-                )
-            )
-        }
+    private fun KtExpression?.containsLiteralDimension(): Boolean = when (this) {
+        is KtConstantExpression -> true
+        is KtDotQualifiedExpression ->
+            receiverExpression is KtConstantExpression &&
+                selectorExpression?.text in setOf("dp", "sp", "em")
+        else -> false
     }
 }
